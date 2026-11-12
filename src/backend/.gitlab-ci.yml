@@ -1,0 +1,19 @@
+build-backend-job:
+  stage: build
+  image:
+    name: gcr.io/kaniko-project/executor:v1.9.0-debug
+    entrypoint: [""]
+  script:
+    # 1. Сборка и пуш Docker-образа в GitLab Registry
+    - /kaniko/executor
+      --context "${CI_PROJECT_DIR}/src/backend"
+      --dockerfile "${CI_PROJECT_DIR}/src/backend/Dockerfile"
+      --destination "${CI_REGISTRY_IMAGE}/momo-store-backend:${CI_COMMIT_SHA}"
+      --build-arg VERSION=$VERSION
+      --cache=true
+      
+    # 2. Сборка бинарника и упаковка в архив для Nexus
+    # (Kaniko не умеет запускать команды внутри контейнера, поэтому используем другой образ)
+    - echo "Artifact preparation for Nexus..."
+    # Здесь нужно либо использовать отдельный job с образом Go,
+    # либо встроить сборку в Dockerfile (например, через multistage).
