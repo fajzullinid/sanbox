@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  backend:
+    build: ./src/backend
+    container_name: backend
+    ports:
+      - "8081:8081"
+    networks:
+      - sandbox-net
+    restart: unless-stopped
+
+
+  frontend:
+    build: ./src/frontend
+    container_name: frontend
+    ports:
+      - "8888:80"
+    depends_on:
+      - backend
+    networks:
+      - sandbox-net
+    restart: unless-stopped
+
+networks:
+  sandbox-net:
+    driver: bridge  

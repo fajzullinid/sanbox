@@ -1,0 +1,13 @@
+build-frontend-job:
+  stage: build
+  image: node:16.20.0-alpine3.18
+  script:
+    # 1. Сборка фронтенда
+    - cd src/frontend
+    - npm install
+    - npm run build
+    # 2. Упаковка в архив для Nexus
+    - VERSION=${VERSION}
+    - tar -czvf sandbox-frontend-${VERSION}.tar.gz -C dist .
+    # 3. Пуш в Nexus (используй переменные GitLab CI для URL и кредов)
+    - curl -v -u "${NEXUS_USER}:${NEXUS_PASSWORD}" --upload-file sandbox-frontend-${VERSION}.tar.gz "${NEXUS_URL}/repository/fajzullinid-frontend/${VERSION}/sandbox-frontend-${VERSION}.tar.gz"
