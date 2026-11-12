@@ -1,10 +1,18 @@
 #!/bin/bash
 set -e
 
+# --- Загрузка переменных окружения ---
+# Ищем .env в корне проекта (на два уровня выше, чем папка backend)
+ENV_PATH="$(dirname "$0")/../../.env"
+
+if [ -f "$ENV_PATH" ]; then
+    source "$ENV_PATH"
+else
+    echo "Ошибка: Файл .env не найден по пути $ENV_PATH"
+    exit 1
+fi
+
 # --- Настройки ---
-NEXUS_DOCKER_URL="93.77.166.24:8081"  # Порт Docker-репозитория в Nexus
-NEXUS_USER="student"
-NEXUS_PASSWORD="1iRd|OjBGq9V"
 REPO_NAME="fajzullinid-backend-docker"
 IMAGE_NAME="sandbox-backend"
 TAG="latest"
