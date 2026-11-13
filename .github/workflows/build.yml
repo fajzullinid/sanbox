@@ -56,6 +56,24 @@ jobs:
       - name: Log in NEXUS
         run: echo "${{ secrets.NEXUS_PASSWORD }}" | docker login ${{ secrets.NEXUS_DOCKER_URL }} -u ${{ secrets.NEXUS_USER }} --password-stdin 
 
+      - name: Build builder stage (for tests)
+        run: docker build --target builder -t sandbox-backend-builder:ci ./src/backend
+
+      - name: Run Go tests
+        run: |
+          mkdir -p reports
+          # Запускаем тесты внутри контейнера, монтируем папку для отчетов
+          docker run --rm -v "$PWD/reports:/reports" sandbox-backend-builder:ci sh -c '
+            go test -v ./... 2>&1 | tee /reports/test.log
+          '
+
+      - name: Upload test reports
+        if: always() # Загружаем отчеты, даже если тесты упали
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-reports
+          path: reports/
+        
       - name: Build and push backend 
         uses: docker/build-push-action@v5
         with: 
