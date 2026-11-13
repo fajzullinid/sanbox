@@ -1,8 +1,6 @@
-version: '3.8'
-
 services:
   backend:
-    build: ./src/backend
+    image: ${IMAGE_REGISTRY}/fajzullinid-backend-docker/sandbox-backend:${IMAGE_TAG}
     container_name: backend
     ports:
       - "8081:8081"
@@ -10,9 +8,8 @@ services:
       - sandbox-net
     restart: unless-stopped
 
-
   frontend:
-    build: ./src/frontend
+    image: ${IMAGE_REGISTRY}/fajzullinid-frontend-docker/sandbox-frontend:${IMAGE_TAG}
     container_name: frontend
     ports:
       - "8888:80"
@@ -24,4 +21,4 @@ services:
 
 networks:
   sandbox-net:
-    driver: bridge  
+    driver: bridge
