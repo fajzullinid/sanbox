@@ -13,7 +13,11 @@ env:
   REGISTRY_GHCR: ghcr.io
   IMAGE_NAME_BACKEND: ${{ github.repository }}/backend 
   IMAGE_NAME_FRONTEND: ${{ github.repository }}/frontend
-  VERSION: ${{ github.sha }}
+  VERSION: ${{ github.run_id }}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-and-push:

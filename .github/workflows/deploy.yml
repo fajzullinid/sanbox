@@ -9,6 +9,10 @@ on:
       - lab3
   workflow_dispatch:  
     
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false # Деплой лучше не отменять на полпути, пусть завершится
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
