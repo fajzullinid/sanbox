@@ -7,6 +7,7 @@ on:
       - completed
     branches:
       - lab3
+    workflow_dispatch:  
     
 jobs:
   deploy:
