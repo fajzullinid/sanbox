@@ -9,7 +9,7 @@ ENV VUE_APP_API_URL=/api
 RUN npm install 
  
 COPY . .  
- 
+
 RUN npm run build
 
 FROM nginx:alpine
