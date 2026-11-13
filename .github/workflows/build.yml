@@ -35,7 +35,7 @@ jobs:
       # Логин в NEXUS
 
       - name: Log in NEXUS
-        run: echo "${{ secrets.NEXUS_REPO_PASS }}" | docker login ${{ secrets.NEXUS_HOST }} -u ${{ secrets.NEXUS_REPO_USER }} --password-stdin 
+        run: echo "${{ secrets.NEXUS_PASSWORD }}" | docker login ${{ secrets.NEXUS_HOST }} -u ${{ secrets.NEXUS_REPO_USER }} --password-stdin 
 
       - name: build and push backend 
         uses: docker/build-push-action@v5
