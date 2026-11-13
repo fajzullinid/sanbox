@@ -5,28 +5,28 @@ on:
     workflows: ["Build and Push"]
     types: 
       - completed
+    branches:
+      - lab3
     
 jobs:
   deploy:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    environment: prod # Используем окружение, которое создавали
+    environment: prod
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Копируем docker-compose.yml и .env на виртуалку
-      - name: Copy files to VM
+      - name: Copy docker-compose.yml to VM
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.VM_SSH_KEY }}
-          source: "docker-compose.yml,.env"
+          source: "docker-compose.yml"
           target: "~/sandbox/"
 
-      # Заходим по SSH и перезапускаем
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -35,7 +35,8 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
             cd ~/sandbox
-            echo "${{ secrets.NEXUS_REPO_PASS }}" | docker login ${{ secrets.NEXUS_HOST }} -u ${{ secrets.NEXUS_REPO_USER }} --password-stdin
+            echo "${{ secrets.APP_ENV_FILE }}" > .env # ИСПРАВЛЕНО: создаем .env из секрета
+            echo "${{ secrets.NEXUS_PASSWORD }}" | docker login ${{ secrets.NEXUS_DOCKER_URL }} -u ${{ secrets.NEXUS_USER }} --password-stdin # ИСПРАВЛЕНО: имена секретов
             echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
             docker compose pull
             docker compose up -d
