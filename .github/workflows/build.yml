@@ -4,7 +4,10 @@ on:
   push:
     branches:
       - lab3
-
+    paths:
+      - 'src/backend/**'
+      - 'src/frontend/**'
+      - '.github/workflows/build.yml'
 env:
   REGISTRY_GHCR: ghcr.io
   IMAGE_NAME_BACKEND: ${{ github.repository }}/backend 
