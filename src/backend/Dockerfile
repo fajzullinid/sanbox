@@ -5,7 +5,7 @@ WORKDIR /app
 COPY go.mod go.sum ./
  
 COPY . .
-
+ 
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/backend ./cmd/api 
 
 FROM alpine:latest
