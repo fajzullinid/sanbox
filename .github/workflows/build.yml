@@ -14,15 +14,17 @@ env:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    
+    environment: production 
     permissions:
       contents: read
-      packages: write # Чтобы мог пушить в ghcr.io
+      packages: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build Docker
+      - name: Setup Docker Buildx
         uses: docker/setup-buildx-action@v3
       
       - name: Log in ghcr.io 
@@ -30,26 +32,31 @@ jobs:
         with: 
           registry: ${{ env.REGISTRY_GHCR }}
           username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }} # Токен встроен в гитхаб
-
-      # Логин в NEXUS
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Configure Docker for insecure registry (Nexus)
+        run: |
+          sudo mkdir -p /etc/docker
+          echo '{
+            "insecure-registries" : ["${{ secrets.NEXUS_DOCKER_URL }}"]
+          }' | sudo tee /etc/docker/daemon.json
+          sudo systemctl restart docker
 
       - name: Log in NEXUS
         run: echo "${{ secrets.NEXUS_PASSWORD }}" | docker login ${{ secrets.NEXUS_DOCKER_URL }} -u ${{ secrets.NEXUS_USER }} --password-stdin 
 
-      - name: build and push backend 
+      - name: Build and push backend 
         uses: docker/build-push-action@v5
         with: 
           context: ./src/backend
           file: ./src/backend/Dockerfile
           push: true 
-
           tags: |
             ${{ env.REGISTRY_GHCR }}/${{ env.IMAGE_NAME_BACKEND }}:latest
             ${{ env.REGISTRY_GHCR }}/${{ env.IMAGE_NAME_BACKEND }}:${{ env.VERSION }}
-            ${{ secrets.NEXUS_HOST }}/fajzullinid-backend-docker/sandbox-backend:latest
-            ${{ secrets.NEXUS_HOST }}/fajzullinid-backend-docker/sandbox-backend:${{ env.VERSION }}
-      
+            # ИСПРАВЛЕНО: NEXUS_HOST -> NEXUS_DOCKER_URL
+            ${{ secrets.NEXUS_DOCKER_URL }}/fajzullinid-backend-docker/sandbox-backend:latest
+            ${{ secrets.NEXUS_DOCKER_URL }}/fajzullinid-backend-docker/sandbox-backend:${{ env.VERSION }}
 
       - name: Build and push Frontend
         uses: docker/build-push-action@v5
@@ -60,5 +67,6 @@ jobs:
           tags: |
             ${{ env.REGISTRY_GHCR }}/${{ env.IMAGE_NAME_FRONTEND }}:latest
             ${{ env.REGISTRY_GHCR }}/${{ env.IMAGE_NAME_FRONTEND }}:${{ env.VERSION }}
-            ${{ secrets.NEXUS_HOST }}/fajzullinid-frontend-docker/sandbox-frontend:latest
-            ${{ secrets.NEXUS_HOST }}/fajzullinid-frontend-docker/sandbox-frontend:${{ env.VERSION }}
+            # ИСПРАВЛЕНО: NEXUS_HOST -> NEXUS_DOCKER_URL
+            ${{ secrets.NEXUS_DOCKER_URL }}/fajzullinid-frontend-docker/sandbox-frontend:latest
+            ${{ secrets.NEXUS_DOCKER_URL }}/fajzullinid-frontend-docker/sandbox-frontend:${{ env.VERSION }}
