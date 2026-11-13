@@ -54,7 +54,6 @@ jobs:
           tags: |
             ${{ env.REGISTRY_GHCR }}/${{ env.IMAGE_NAME_BACKEND }}:latest
             ${{ env.REGISTRY_GHCR }}/${{ env.IMAGE_NAME_BACKEND }}:${{ env.VERSION }}
-            # ИСПРАВЛЕНО: NEXUS_HOST -> NEXUS_DOCKER_URL
             ${{ secrets.NEXUS_DOCKER_URL }}/fajzullinid-backend-docker/sandbox-backend:latest
             ${{ secrets.NEXUS_DOCKER_URL }}/fajzullinid-backend-docker/sandbox-backend:${{ env.VERSION }}
 
@@ -67,6 +66,5 @@ jobs:
           tags: |
             ${{ env.REGISTRY_GHCR }}/${{ env.IMAGE_NAME_FRONTEND }}:latest
             ${{ env.REGISTRY_GHCR }}/${{ env.IMAGE_NAME_FRONTEND }}:${{ env.VERSION }}
-            # ИСПРАВЛЕНО: NEXUS_HOST -> NEXUS_DOCKER_URL
             ${{ secrets.NEXUS_DOCKER_URL }}/fajzullinid-frontend-docker/sandbox-frontend:latest
             ${{ secrets.NEXUS_DOCKER_URL }}/fajzullinid-frontend-docker/sandbox-frontend:${{ env.VERSION }}
