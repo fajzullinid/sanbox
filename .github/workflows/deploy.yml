@@ -36,8 +36,15 @@ jobs:
           key: ${{ secrets.VM_SSH_KEY }}
           script: |
             cd ~/sandbox
-            echo "${{ secrets.APP_ENV_FILE }}" > .env
+            
+            echo "IMAGE_REGISTRY=${{ secrets.NEXUS_DOCKER_URL }}" > .env
+            echo "IMAGE_TAG=latest" >> .env
+            
+            echo "${{ secrets.APP_ENV_FILE }}" >> .env
+            
             echo "${{ secrets.NEXUS_PASSWORD }}" | docker login ${{ secrets.NEXUS_DOCKER_URL }} -u ${{ secrets.NEXUS_USER }} --password-stdin
+            
             echo "${{ secrets.GHCR_PAT }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            
             docker compose pull
             docker compose up -d
