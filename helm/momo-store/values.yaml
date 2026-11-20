@@ -1,0 +1,19 @@
+# Количество реплик для каждого сервиса
+replicaCount: 2
+
+backend:
+  image: ghcr.io/fajzullinid/sanbox/backend:latest
+  port: 8081
+
+frontend:
+  image: ghcr.io/fajzullinid/sanbox/frontend:latest
+  port: 80
+  nodePort: 30080
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
