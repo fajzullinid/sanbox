@@ -25,7 +25,7 @@ jobs:
           EOF
           chmod 600 ~/.kube/config
           echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
-
+ 
       - name: Debug Kubeconfig
         run: |
           echo "=== Kubeconfig content ==="
