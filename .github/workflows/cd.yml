@@ -45,6 +45,17 @@ jobs:
       - name: Verify Cluster Connection
         run: kubectl cluster-info
 
+      - name: Debug repository structure
+        run: |
+          echo "Current directory:"
+          pwd
+
+          echo "Repository files:"
+          ls -la
+
+          echo "Helm charts:"
+          find . -name Chart.yaml
+
       # 5. Устанавливаем Helm
       - name: Install Helm
         run: |
