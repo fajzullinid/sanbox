@@ -23,9 +23,11 @@ jobs:
           chmod 600 ~/.kube/config
           echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
 
-      - name: Verify Cluster Connection
+      - name: Debug Kubeconfig
         run: |
-          kubectl config view
+          echo "=== Kubeconfig content ==="
+          cat ~/.kube/config
+          echo "=== Cluster info ==="
           kubectl cluster-info
 
       - name: Install Helm
@@ -35,6 +37,6 @@ jobs:
       - name: Deploy with Helm
         run: |
           helm upgrade --install momo-store ./helm/momo-store \
-            --set frontend.image=ghcr.io/fajzullinid/sanbox/frontend:${{ github.event.inputs.version }} \
-            --set backend.image=ghcr.io/fajzullinid/sanbox/backend:${{ github.event.inputs.version }} \
+            --set frontend.image=ghcr.io/fajzullinid/sanbox/frontend:${{ github.event.inputs.VERSION }} \
+            --set backend.image=ghcr.io/fajzullinid/sanbox/backend:${{ github.event.inputs.VERSION }} \
             --wait
