@@ -16,11 +16,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Verify Cluster Connection
+        run: kubectl cluster-info
+
       - name: Setup Kubeconfig
         run: |
           mkdir -p ~/.kube
           echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
           chmod 600 ~/.kube/config
+          echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
 
       - name: Install Helm
         run: |
