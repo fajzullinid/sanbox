@@ -1,0 +1,34 @@
+name: CD Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      VERSION:
+        description: "Версия образов (например, 20261119-214623)"
+        required: true
+        type: string
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
+          chmod 600 ~/.kube/config
+
+      - name: Install Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+      - name: Deploy with Helm
+        run: |
+          helm upgrade --install momo-store ./helm/momo-store \
+            --set frontend.image=ghcr.io/fajzullinid/sanbox/frontend:${{ github.event.inputs.version }} \
+            --set backend.image=ghcr.io/fajzullinid/sanbox/backend:${{ github.event.inputs.version }} \
+            --wait

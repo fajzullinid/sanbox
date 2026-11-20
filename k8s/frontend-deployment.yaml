@@ -17,6 +17,7 @@ spec:
       containers:
         - name: frontend
           image: "ghcr.io/fajzullinid/sanbox/frontend:latest"
+          
           imagePullPolicy: Always
           ports:
             - name: http
