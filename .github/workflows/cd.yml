@@ -19,7 +19,10 @@ jobs:
       - name: Setup Kubeconfig
         run: |
           mkdir -p ~/.kube
-          echo "${{ secrets.KUBE_CONFIG }}" > ~/.kube/config
+          # Используем heredoc вместо echo. Это безопаснее для многострочных секретов.
+          cat << 'EOF' > ~/.kube/config
+          ${{ secrets.KUBE_CONFIG }}
+          EOF
           chmod 600 ~/.kube/config
           echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
 
