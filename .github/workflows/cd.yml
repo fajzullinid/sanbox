@@ -22,7 +22,7 @@ jobs:
           curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
           echo "$HOME/yandex-cloud/bin" >> $GITHUB_PATH
 
-      # 2. Настраиваем yc
+      # 2. Настраиваем yc 
       - name: Configure yc
         env:
           YC_SA_KEY: ${{ secrets.YC_SA_KEY }}
