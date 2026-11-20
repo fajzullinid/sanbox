@@ -16,27 +16,41 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Kubeconfig
+      # 1. Устанавливаем yc CLI
+      - name: Install yc CLI
         run: |
-          mkdir -p ~/.kube
-          # Используем heredoc вместо echo. Это безопаснее для многострочных секретов.
-          cat << 'EOF' > ~/.kube/config
-          ${{ secrets.KUBE_CONFIG }}
-          EOF
-          chmod 600 ~/.kube/config
-          echo "KUBECONFIG=$HOME/.kube/config" >> $GITHUB_ENV
- 
-      - name: Debug Kubeconfig
-        run: |
-          echo "=== Kubeconfig content ==="
-          cat ~/.kube/config
-          echo "=== Cluster info ==="
-          kubectl cluster-info
+          curl -sSL https://storage.yandexcloud.net/yandexcloud-yc/install.sh | bash
+          echo "$HOME/yandex-cloud/bin" >> $GITHUB_PATH
 
+      # 2. Настраиваем yc (как скинул Денис)
+      - name: Configure yc
+        env:
+          YC_SA_KEY: ${{ secrets.YC_SA_KEY }}
+          YC_FOLDER_ID: ${{ vars.YC_FOLDER_ID }}
+        run: |
+          install -m 600 /dev/null "$RUNNER_TEMP/yc-sa-key.json"
+          printf '%s' "$YC_SA_KEY" > "$RUNNER_TEMP/yc-sa-key.json"
+
+          yc config profile create ci
+          yc config set service-account-key "$RUNNER_TEMP/yc-sa-key.json"
+          yc config set folder-id "$YC_FOLDER_ID"
+
+      # 3. Получаем kubeconfig для кластера
+      - name: Get Kubeconfig
+        run: |
+          # Замени ID кластера на свой!
+          yc managed-kubernetes cluster get-credentials --id catlfraot6janr9bu7lv --external --force
+
+      # 4. Проверяем подключение
+      - name: Verify Cluster Connection
+        run: kubectl cluster-info
+
+      # 5. Устанавливаем Helm
       - name: Install Helm
         run: |
           curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
+      # 6. Деплой
       - name: Deploy with Helm
         run: |
           helm upgrade --install momo-store ./helm/momo-store \
