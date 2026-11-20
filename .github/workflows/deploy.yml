@@ -11,7 +11,7 @@ on:
     
 concurrency:
   group: deploy-${{ github.ref }}
-  cancel-in-progress: false # Деплой лучше не отменять на полпути, пусть завершится
+  cancel-in-progress: false 
 
 jobs:
   deploy:

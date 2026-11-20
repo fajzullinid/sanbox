@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sandbox-frontend
+  labels:
+    app: sandbox-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sandbox-frontend
+  template:
+    metadata:
+      labels:
+        app: sandbox-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: "ghcr.io/fajzullinid/sanbox/frontend:latest"
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
