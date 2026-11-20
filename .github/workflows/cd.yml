@@ -45,6 +45,7 @@ jobs:
       - name: Verify Cluster Connection
         run: kubectl cluster-info
 
+      # Проверка структуры и наличие Helm чартов
       - name: Debug repository structure
         run: |
           echo "Current directory:"
